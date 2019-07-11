@@ -6,7 +6,7 @@ read -r -d '' about <<- INFO
 #                C/C++ microcontroller                 #
 #         compile, dump and programming script         #
 #                                                      #
-#                   Version 2.1.0                      #
+#                   Version 2.2.0                      #
 #                                                      #
 #  2019 by Vivien Richter <vivien-richter@outlook.de>  #
 #                                                      #
@@ -26,6 +26,7 @@ Usage: run.sh [-i] [-d] [-c] [-b] [-t]
 
 Options:
     -v, --version         Shows the version number and terminates the script.
+    -l, --license         Shows license information and terminates the script.
     -i                    Shows target device details.
     -d                    Creates dump files of all target device memories.
     -c                    Deletes all built binary files.
@@ -47,6 +48,19 @@ showVersion() {
     echo $(grep -oP -m 1 '(?<=Version)(\s+)?\K([^ ]*)' $0)
 }
 
+# Shows license information.
+showLicense() {
+    echo "This script is free software.
+So you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation.
+
+This script is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.
+Without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+Please see the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with this script.
+If not, please see: http://www.gnu.org/licenses"
+}
+
 # Shows info text.
 showInfo() {
 	echo "$about"
@@ -58,6 +72,10 @@ if [ $# -gt 0 ]; then
 		case $1 in
             -v | --version )
                 showVersion
+                exit 0
+                ;;
+            -l | --license )
+                showLicense
                 exit 0
                 ;;
 			-i )

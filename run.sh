@@ -6,7 +6,7 @@ read -r -d '' about <<- INFO
 #                C/C++ microcontroller                 #
 #         compile, dump and programming script         #
 #                                                      #
-#                     Version 2.0                      #
+#                   Version 2.1.0                      #
 #                                                      #
 #  2019 by Vivien Richter <vivien-richter@outlook.de>  #
 #                                                      #
@@ -25,12 +25,13 @@ read -r -d '' about <<- INFO
 Usage: run.sh [-i] [-d] [-c] [-b] [-t]
 
 Options:
+    -v, --version         Shows the version number and terminates the script.
     -i                    Shows target device details.
     -d                    Creates dump files of all target device memories.
     -c                    Deletes all built binary files.
     -b                    Builds binary files from the source code.
     -t                    Transfers built binary files to the target device.
-    -h, --help, -?        Shows this info text.
+    -h, --help, -?        Shows this info text and terminates the script.
 INFO
 
 # Configuration
@@ -41,6 +42,11 @@ targetDevice="atmega8"
 programmingDevice="usbasp"
 supportedMemoryTypes=(calibration eeprom efuse flash fuse hfuse lfuse lock signature application apptable boot prodsig usersig);
 
+# Shows version number.
+showVersion() {
+    echo $(grep -oP -m 1 '(?<=Version)(\s+)?\K([^ ]*)' $0)
+}
+
 # Shows info text.
 showInfo() {
 	echo "$about"
@@ -50,6 +56,10 @@ showInfo() {
 if [ $# -gt 0 ]; then
     while [ "$1" != "" ]; do
 		case $1 in
+            -v | --version )
+                showVersion
+                exit 0
+                ;;
 			-i )
 				showTargetDeviceDetails=true
 				;;

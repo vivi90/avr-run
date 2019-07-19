@@ -14,7 +14,7 @@ Requirements
 
 Usage
 -----
-1. Set the the target device and programming device type, you want to use it with at the `Configuration` section of the script and doublecheck the specified directory paths.[^1]
+1. Please set the target device and programming device type[^1], you want to use it with in the `run-config.cfg` file and doublecheck the specified directory paths.
 2. Check the available options with `run.sh -h` or `run.sh --help`.
 3. Have fun!
 

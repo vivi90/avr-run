@@ -6,7 +6,7 @@ read -r -d '' about <<- INFO
 #                C/C++ microcontroller                 #
 #         compile, dump and programming script         #
 #                                                      #
-#                   Version 3.0.0                      #
+#                   Version 3.0.1                      #
 #                                                      #
 #  2019 by Vivien Richter <vivien-richter@outlook.de>  #
 #                                                      #
@@ -149,8 +149,25 @@ fi
 
 # Transfers compiled binary to the target device.
 if [ "$transfer" = true ]; then
+    # Erasing target device.
+    echo -e "\033[1mErasing target device..\033[0m"
+    avrdude -p $targetDevice -c $programmingDevice -e
+    # Transferring.
 	echo -e "\033[1mTransferring..\033[0m"
-	avrdude -p $targetDevice -c $programmingDevice -e -U $binaryDirectory/flash.hex
+    # Gets target device info.
+	targetInfo=$(avrdude -p $targetDevice -c $programmingDevice -n -v 2>&1)
+    # Checks selected memory types.
+	for memoryType in "${selectedMemoryTypes[@]}"; do
+        # Checks, if the selected memory type is supported by the target device.
+		if grep -q -w "$memoryType" <<< $targetInfo; then
+            file=$binaryDirectory/$memoryType.hex
+            # Checks, if the binary file for the selected memory type exists.
+            if [ -f $file ]; then
+                # Transferring..
+			    avrdude -p $targetDevice -c $programmingDevice -U $memoryType:w:$file:i
+            fi
+		fi
+	done
 fi
 
 # Exit.

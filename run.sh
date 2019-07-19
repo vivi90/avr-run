@@ -6,7 +6,7 @@ read -r -d '' about <<- INFO
 #                C/C++ microcontroller                 #
 #         compile, dump and programming script         #
 #                                                      #
-#                   Version 3.0.1                      #
+#                   Version 3.0.2                      #
 #                                                      #
 #  2019 by Vivien Richter <vivien-richter@outlook.de>  #
 #                                                      #
@@ -34,9 +34,6 @@ Options:
     -t                    Transfers built binary files to the target device.
     -h, --help, -?        Shows this info text and terminates the script.
 INFO
-
-# Include configuration
-source run-config.cfg
 
 # Shows version number.
 showVersion() {
@@ -102,6 +99,17 @@ if [ $# -gt 0 ]; then
 else
     showInfo
 	exit 1
+fi
+
+# Checks, if the configuration file does exists and includes it.
+configurationFile="run-config.cfg"
+if [ -f $configurationFile ]; then
+    # Includes the configuration file
+    source $configurationFile
+else
+    # Shows a error message and terminates the script.
+    echo -e "\033[1mConfiguration file not found!\033[0m"
+    exit 1
 fi
 
 # Shows target device details.

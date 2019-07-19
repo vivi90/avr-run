@@ -6,7 +6,7 @@ read -r -d '' about <<- INFO
 #                C/C++ microcontroller                 #
 #         compile, dump and programming script         #
 #                                                      #
-#                   Version 2.2.0                      #
+#                   Version 3.0.0                      #
 #                                                      #
 #  2019 by Vivien Richter <vivien-richter@outlook.de>  #
 #                                                      #
@@ -35,13 +35,8 @@ Options:
     -h, --help, -?        Shows this info text and terminates the script.
 INFO
 
-# Configuration
-sourceDirectory="./src"
-binaryDirectory="./bin"
-dumpDirectory="./dmp"
-targetDevice="atmega8"
-programmingDevice="usbasp"
-supportedMemoryTypes=(calibration eeprom efuse flash fuse hfuse lfuse lock signature application apptable boot prodsig usersig);
+# Include configuration
+source run-config.cfg
 
 # Shows version number.
 showVersion() {
@@ -117,13 +112,19 @@ fi
 # Creates dump files.
 if [ "$createDump" = true ]; then
 	echo -e "\033[1mCreating dump files..\033[0m"
+    # Preparing.
 	currentDateTime=$(date "+%Y.%m.%d_%H:%M:%S")
 	mkdir -v -p $dumpDirectory/$currentDateTime
+    # Gets target device info and save it.
 	targetInfo=$(avrdude -p $targetDevice -c $programmingDevice -n -v 2>&1)
 	echo "$targetInfo" > $dumpDirectory/$currentDateTime/info.txt
-	for memoryType in "${supportedMemoryTypes[@]}"; do
+    # Checks selected memory types.
+	for memoryType in "${selectedMemoryTypes[@]}"; do
+        # Checks, if the selected memory type is supported by the target device.
 		if grep -q -w "$memoryType" <<< $targetInfo; then
-			avrdude -p $targetDevice -c $programmingDevice -n -U $memoryType:r:$dumpDirectory/$currentDateTime/$memoryType.hex:i
+            # Creates a dump.
+            file=$dumpDirectory/$currentDateTime/$memoryType.hex
+			avrdude -p $targetDevice -c $programmingDevice -n -U $memoryType:r:$file:i
 		fi
 	done
 fi
